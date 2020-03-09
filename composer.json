@@ -1,0 +1,7 @@
+{
+  "name": "gringlas/go-client",
+  "description": "SoapClient for usage with GO API (https://www.general-overnight.com).",
+  "require": {
+    "php": "^7.0"
+  }
+}
