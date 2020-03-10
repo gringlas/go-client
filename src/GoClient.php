@@ -1,10 +1,7 @@
 <?php
 
-namespace Gringlas\GoClient;
+namespace GoClient;
 
-use GoApi\Lib\WSDLTypes\PDF\PDFSendung;
-use GoApi\Lib\WSDLTypes\Sendung;
-use GoApi\Lib\WSDLTypes\Sendungsnummern;
 use SoapClient;
 
 class GoClient

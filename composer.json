@@ -1,16 +1,18 @@
 {
   "name": "gringlas/go-client",
   "description": "SoapClient for usage with GO API (https://www.general-overnight.com).",
-  "authors" : {
-    "name" : "Sebastian Köller",
-    "email" : "mail@sebastian-koeller.de"
-  },
+  "authors" : [
+    {
+      "name": "Sebastian Köller",
+      "email": "mail@sebastian-koeller.de"
+    }
+  ],
   "require": {
     "php": "^7.0"
   },
   "autoload": {
     "psr-4": {
-      "Gringlas\\GoCLient\\": "src/"
+      "GoCLient\\": "src/"
     }
   }
 }
