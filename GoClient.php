@@ -1,6 +1,6 @@
 <?php
 
-namespace GoApi\Lib;
+namespace gringlas\GoClient;
 
 use GoApi\Lib\WSDLTypes\PDF\PDFSendung;
 use GoApi\Lib\WSDLTypes\Sendung;

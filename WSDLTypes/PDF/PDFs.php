@@ -1,6 +1,6 @@
 <?php
 
-namespace GoApi\Lib\WSDLTypes\PDF;
+namespace gringlas\GoClient\WSDLTypes\PDF;
 
 class PDFs
 {

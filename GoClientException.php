@@ -1,7 +1,7 @@
 <?php
 
 
-namespace GoApi\Lib;
+namespace gringlas\GoClient;
 
 
 use Throwable;

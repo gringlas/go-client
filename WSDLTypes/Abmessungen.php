@@ -1,7 +1,7 @@
 <?php
 
 
-namespace GoApi\Lib\WSDLTypes;
+namespace gringlas\GoClient\WSDLTypes;
 
 
 class Abmessungen
