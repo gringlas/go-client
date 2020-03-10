@@ -1,5 +1,5 @@
 <?php
-namespace GoClient\WSDLTypes;
+namespace Gringlas\GoClient\WSDLTypes;
 
 class Sendung
 {

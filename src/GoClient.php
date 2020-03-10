@@ -1,6 +1,6 @@
 <?php
 
-namespace GoClient;
+namespace Gringlas\GoClient;
 
 use SoapClient;
 

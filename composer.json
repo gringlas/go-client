@@ -1,6 +1,7 @@
 {
   "name": "gringlas/go-client",
   "description": "SoapClient for usage with GO API (https://www.general-overnight.com).",
+  "license": "MIT",
   "authors" : [
     {
       "name": "Sebastian Köller",
@@ -12,7 +13,7 @@
   },
   "autoload": {
     "psr-4": {
-      "GoCLient\\": "src/"
+      "Gringlas\\GoClient\\": "src/"
     }
   }
 }
