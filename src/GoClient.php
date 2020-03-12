@@ -3,6 +3,9 @@
 namespace Gringlas\GoClient;
 
 use SoapClient;
+use Gringlas\GoClient\WSDLTypes\Sendung;
+use Gringlas\GoClient\WSDLTypes\Sendungsnummern;
+use Gringlas\GoClient\WSDLTypes\PDF\PDFSendung;
 
 class GoClient
 {
@@ -25,22 +28,28 @@ class GoClient
      *
      * @var bool
      */
-    private $isSaveResponse = true;
+    private $logResponses = true;
 
-    private $xmlResponsesPath = "logs/Go/responses/";
+    private $logResponsesPath = "logs/Go/responses/";
 
     /**
      * GoClient constructor.
      * @param $wsdl
      * @param $options see: https://www.php.net/manual/de/soapclient.soapclient.php
      */
-    public function __construct($wsdl, $options)
+    public function __construct($wsdl, $SoapClientOptions, $options = [])
     {
-        $this->soapClient = new SoapClient($wsdl, $options);
+        if (isset($options['logResponses'])) {
+            $this->isSaveResponse = $options['logResponses'];
+        }
+        if (isset($options['logResponsesPath'])) {
+            $this->logResponsesPath = $options['logResponsesPath'];
+        }
+        $this->soapClient = new SoapClient($wsdl, $SoapClientOptions);
     }
 
 
-    public function doOrder(Sendung $sendung, $status = null)
+    public function doOrder($sendung, $status = null)
     {
         if ($status) {
             switch($status) {
@@ -58,12 +67,19 @@ class GoClient
         try {
             $result = $this->soapClient->SendungsDaten($sendung);
             $this->saveResponse("SendungsDaten_" . time() . ".xml");
-            return $result;
+            return $this->toSendungsRueckmeldung($result);
         } catch (\SoapFault $soapFault) {
-            $goClientException = new GoClientException("PDF could not get created");
-            $goClientException->goErrors = $soapFault->detail;
-            var_dump($soapFault->getMessage());
-            die("SendungsDaten Soap Fault");
+            if (strpos($soapFault->faultcode, 'Server')) {
+                if (isset($soapFault->detail)) {
+                    throw new GoClientException("Die GO Validierung meldet: " . $this->getValidationError($soapFault->detail), GoClientException::CODE_GO_VALIDATION);
+                } else {
+                    throw new GoClientException("Daten, die an den GO Server geschickt werden, erzeugen folgende Meldung: " . $soapFault->getMessage(), GoClientException::CODE_GO_SERVER_ERROR);
+                }
+            }
+            if ($soapFault->faultcode == 'HTTP') {
+                throw new GoClientException("Bitte die SoapClient Konfiguration prüfen: " . $soapFault->getMessage(), GoClientException::CODE_SOAP_CONFIGURATION);
+            }
+            throw new GoClientException("Es ist ein allgemeiner Fehler aufgetreten", GoClientException::CODE_GENERAL);
         }
     }
 
@@ -82,7 +98,7 @@ class GoClient
     }
 
 
-    public function doOrderStorno(Sendung $sendung)
+    public function doOrderStorno($sendung)
     {
         $sendung->Status = self::STATUS_STORNO;
         return $this->doOrder($sendung);
@@ -105,10 +121,36 @@ class GoClient
     private function saveResponse($filename)
     {
         if ($this->isSaveResponse) {
-            if (is_dir($this->xmlResponsesPath)) {
+            if (is_dir($this->logResponsesPath)) {
                 $xml = $this->soapClient->__getLastResponse();
-                file_put_contents($this->xmlResponsesPath . $filename, $xml);
+                file_put_contents($this->logResponsesPath . $filename, $xml);
             }
         }
+    }
+
+    /**
+     * SendungsRueckmeldung returns an object containing Sendung
+     *
+     * @param $data
+     * @return mixed
+     */
+    private function toSendungsRueckmeldung($data)
+    {
+        if (isset($data->Sendung)) {
+            return $data->Sendung;
+        } else {
+            throw new GoClientException("GO response doesn't contain Sendung object");
+        }
+    }
+
+
+    /**
+     * ValidationError contains a GOWebService_Fehlerbehandlung
+     * @param $validationError
+     */
+    private function getValidationError($validationError)
+    {
+        return $validationError->GOWebService_Fehlerbehandlung->Fehlermeldungen->Fehler->Beschreibung;
+
     }
 }

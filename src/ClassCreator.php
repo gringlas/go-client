@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Gringlas\GoClient;;
+namespace Gringlas\GoClient;
 
-use GoApi\Lib\WSDLTypes\PDF\PDFs;
-use GoApi\Lib\WSDLTypes\PDF\PDFSendung;
+use Gringlas\GoClient\WSDLTypes\PDF\PDFs;
+use Gringlas\GoClient\WSDLTypes\PDF\PDFSendung;
 
 class ClassCreator
 {
