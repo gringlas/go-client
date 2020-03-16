@@ -28,9 +28,13 @@ class GoClient
      *
      * @var bool
      */
-    private $logResponses = true;
+    private $isLogResponses = true;
+
+    private $isLogRequests = true;
 
     private $logResponsesPath = "logs/Go/responses/";
+
+    private $logRequestsPath = "logs/Go/responses/";
 
     /**
      * GoClient constructor.
@@ -40,10 +44,16 @@ class GoClient
     public function __construct($wsdl, $SoapClientOptions, $options = [])
     {
         if (isset($options['logResponses'])) {
-            $this->isSaveResponse = $options['logResponses'];
+            $this->isLogResponses = $options['logResponses'];
         }
         if (isset($options['logResponsesPath'])) {
             $this->logResponsesPath = $options['logResponsesPath'];
+        }
+        if (isset($options['logRequests'])) {
+            $this->isLogRequests = $options['logRequests'];
+        }
+        if (isset($options['logRequestsPath'])) {
+            $this->logRequestsPath = $options['logRequestsPath'];
         }
         $this->soapClient = new SoapClient($wsdl, $SoapClientOptions);
     }
@@ -66,7 +76,8 @@ class GoClient
         }
         try {
             $result = $this->soapClient->SendungsDaten($sendung);
-            $this->saveResponse("SendungsDaten_" . time() . ".xml");
+            $this->logRequest("SendungsDaten_" . time() . ".xml");
+            $this->logResponse("SendungsDaten_" . time() . ".xml");
             return $this->toSendungsRueckmeldung($result);
         } catch (\SoapFault $soapFault) {
             if (strpos($soapFault->faultcode, 'Server')) {
@@ -118,12 +129,23 @@ class GoClient
     }
 
 
-    private function saveResponse($filename)
+    private function logResponse($filename)
     {
-        if ($this->isSaveResponse) {
+        if ($this->isLogResponses) {
             if (is_dir($this->logResponsesPath)) {
                 $xml = $this->soapClient->__getLastResponse();
                 file_put_contents($this->logResponsesPath . $filename, $xml);
+            }
+        }
+    }
+
+
+    private function logRequests($filename)
+    {
+        if ($this->isLogRequests) {
+            if (is_dir($this->logRequestsPath)) {
+                $xml = $this->soapClient->__getLastRequest();
+                file_put_contents($this->logRequestsPath . $filename, $xml);
             }
         }
     }
@@ -150,7 +172,9 @@ class GoClient
      */
     private function getValidationError($validationError)
     {
-        return $validationError->GOWebService_Fehlerbehandlung->Fehlermeldungen->Fehler->Beschreibung;
+        return
+            $validationError->GOWebService_Fehlerbehandlung->Fehlermeldungen->Fehler->Feld . ": ".
+            $validationError->GOWebService_Fehlerbehandlung->Fehlermeldungen->Fehler->Beschreibung;
 
     }
 }
