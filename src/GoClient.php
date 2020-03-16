@@ -119,7 +119,7 @@ class GoClient
     {
         try {
             $result = $this->soapClient->PDFLabel($sendungsnummern);
-            $this->saveResponse("PDFLabel" . time() . ".xml");
+            $this->logResponse("PDFLabel" . time() . ".xml");
 
             $PDFSendung = ClassCreator::PDFSendungFromStdClass($result->Sendung);
             return $PDFSendung;
