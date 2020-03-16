@@ -140,7 +140,7 @@ class GoClient
     }
 
 
-    private function logRequests($filename)
+    private function logRequest($filename)
     {
         if ($this->isLogRequests) {
             if (is_dir($this->logRequestsPath)) {
