@@ -47,14 +47,18 @@ class GoClient
             $this->isLogResponses = $options['logResponses'];
         }
         if (isset($options['logResponsesPath'])) {
-            mkdir($options['logResponsesPath'], true);
+            if (!is_dir($options['logResponsesPath'])) {
+                mkdir($options['logResponsesPath'], true);
+            }
             $this->logResponsesPath = $options['logResponsesPath'];
         }
         if (isset($options['logRequests'])) {
             $this->isLogRequests = $options['logRequests'];
         }
         if (isset($options['logRequestsPath'])) {
-            mkdir($options['logRequestsPath'], true);
+            if (!is_dir($options['logRequestsPath'])) {
+                mkdir($options['logRequestsPath'], true);
+            }
             $this->logRequestsPath = $options['logRequestsPath'];
         }
         $this->soapClient = new SoapClient($wsdl, $SoapClientOptions);
